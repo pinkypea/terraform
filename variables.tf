@@ -1,5 +1,5 @@
 variable "esxi_hostname" {
-	default = "hostname"
+	default = "some_hostname"
 }
 
 variable "esxi_hostport" {
@@ -11,11 +11,11 @@ variable "esxi_hostssl" {
 }
 
 variable "esxi_username" {
-	default = ""
+	default = "my_username"
 }
 
 variable "esxi_password" {
-	default = ""
+	default = "my_password"
 }
 
 variable "esxi_diskstore" {
