@@ -37,6 +37,7 @@ resource "esxi_guest" "trios" {
     value = base64encode(data.template_file.userdata_default.rendered)
   }
 }
+
 data "template_file" "userdata_default" {
   template = file("userdata.tpl")
   vars = {
