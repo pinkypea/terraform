@@ -7,96 +7,49 @@ provider "esxi" {
   esxi_password = var.esxi_password
 }
 
-resource "esxi_guest" "trios_backend" {
-  guest_name = "trios_backend" 
+resource "esxi_guest" "trios" {
+  guest_name = "trios"
   disk_store = var.esxi_diskstore
-
   boot_firmware = "efi"
-  
-  # memsize = "4096"
-  # numvcpus = "3"
-  # boot_disk_type = "thin"
-  # boot_disk_size = "50"
-  power = "on"
-  virthwver = "21"
-  ovf_source        = "trios_test.ova"
+  power         = "on"
+  virthwver     = "21"
+  ovf_source    = var.ovf_file
   network_interfaces {
-    virtual_network = "VM Network" 
+    virtual_network = "VM Network"
+  }
+  guestinfo = {
+    "metadata.encoding" = "gzip+base64"
+    "metadata"          = base64gzip(data.template_file.cloud-metadata.rendered)
+    "userdata.encoding" = "gzip+base64"
+    "userdata"          = base64gzip(data.template_file.userdata_default.rendered)
+  }
+  ovf_properties {
+    key   = "password"
+    value = "trios"
+  }
+
+  ovf_properties {
+    key   = "hostname"
+    value = "trios"
+  }
+  ovf_properties {
+    key   = "user-data"
+    value = base64encode(data.template_file.userdata_default.rendered)
+  }
+}
+data "template_file" "userdata_default" {
+  template = file("userdata.tpl")
+  vars = {
+    HOSTNAME = "trios"
+    HELLO    = "Hello ESXi World!"
   }
 }
 
-resource "esxi_guest" "trios_database" {
-  guest_name = "trios_database" 
-  disk_store = var.esxi_diskstore
-
-  boot_firmware = "efi"
-  
-  # memsize = "4096"
-  # numvcpus = "3"
-  # boot_disk_type = "thin"
-  # boot_disk_size = "50"
-  power = "on"
-  virthwver = "21"
-  ovf_source        = "trios_test.ova"
-  network_interfaces {
-    virtual_network = "VM Network" 
+data "template_file" "cloud-metadata" {
+  template = file("metadata.tpl")
+  vars = {
+    ipAddress  = var.vmIP
+    gateway    = var.vmGateway
+    nameserver = var.nameserver
   }
 }
-
-resource "esxi_guest" "trios_conference" {
-  guest_name = "trios_conference" 
-  disk_store = var.esxi_diskstore
-
-  boot_firmware = "efi"
-  
-  # memsize = "4096"
-  # numvcpus = "3"
-  # boot_disk_type = "thin"
-  # boot_disk_size = "50"
-  power = "on"
-  virthwver = "21"
-  ovf_source        = "trios_test.ova"
-  network_interfaces {
-    virtual_network = "VM Network" 
-  }
-}
-
-resource "esxi_guest" "trios_storage" {
-  guest_name = "trios_storage" 
-  disk_store = var.esxi_diskstore
-
-  boot_firmware = "efi"
-  
-  # memsize = "4096"
-  # numvcpus = "3"
-  # boot_disk_type = "thin"
-  # boot_disk_size = "50"
-  power = "on"
-  virthwver = "21"
-  ovf_source        = "trios_test.ova"
-  network_interfaces {
-    virtual_network = "VM Network" 
-  }
-}
-
-resource "esxi_guest" "trios_loadbalancer" {
-  guest_name = "trios_loadbalancer" 
-  disk_store = var.esxi_diskstore
-
-  boot_firmware = "efi"
-  
-  # memsize = "4096"
-  # numvcpus = "3"
-  # boot_disk_type = "thin"
-  # boot_disk_size = "50"
-  power = "on"
-  virthwver = "21"
-  ovf_source        = "trios_test.ova"
-  network_interfaces {
-    virtual_network = "VM Network" 
-  }
-}
-
-
-
-
